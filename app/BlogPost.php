@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Scopes\LatestScope;
+use App\Scopes\SoftDeleteScope;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
@@ -51,10 +52,10 @@ class BlogPost extends Model
     // Relationship ထဲက foreign key ကိုဖ်တ္ခ်င္တာမို့ boot ဆိုတဲ့ buildIn function ကိုေခၚသံုးတာ။
     public static function boot()
     {
+         // ဒါက GlobalScope Example ပဲျဖစ္ပါတယ္။
+        static::addGlobalScope(new SoftDeleteScope); // သူကေတာ့ Global Scope ကိုေခၚသံုးထားတာပဲျဖစ္ပါတယ္။ Query ေတြအတြက္ေပါ့။
+       
         parent::boot();
-
-        // ဒါက GlobalScope Example ပဲျဖစ္ပါတယ္။
-        // static::addGlobalScope(new LatestScope); // သူကေတာ့ Global Scope ကိုေခၚသံုးထားတာပဲျဖစ္ပါတယ္။ Query ေတြအတြက္ေပါ့။
 
         static::deleting(function (BlogPost $blogPost) {
             $blogPost->comments()->delete(); // comment table ထဲမွာရွိတဲ့ blogPost နဲ့ဆိုင္တဲ့ေကာင္ေတြအားလံုးကိုသြားဖ်တ္တာ။

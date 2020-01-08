@@ -105,7 +105,7 @@ class BlogPostController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function destroy(Request $request, $id) {
-		$post = BlogPost::find($id);
+		$post = BlogPost::findOrFail($id);
 
 		// if(Gate::denies('delete-post', $post)) {
 		// 	abort(403, 'You can not delete this blog post');
@@ -113,7 +113,7 @@ class BlogPostController extends Controller {
 		// အေပၚမွာ comment ပိတ္ထားတဲ့ေကာင္ေတြကိုမသံုးပဲနဲ့ အခုလိုမ်ိုး တစ္ေၾကာင္းတည္းေရးတာလဲအတူတူပဲ
 		// ဒါေပမဲ့ အေပၚဆံုးမွာေတာ့ gate ကိုေခၚေပးထးဖို့လိုတယ္ ( ဆိုလိုတာက ) use Illuminate လုပ္ခိုင္းတာ။
 
-
+			// dd($post);
 		$this->authorize('delete', $post);
 
 		$post->delete();
