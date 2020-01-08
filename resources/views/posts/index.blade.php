@@ -7,7 +7,7 @@
                     @if($post->trashed())
                         <del>
                     @endif
-                    <a href="{{ url('posts/'.$post->id) }}">{{ $post->title }}</a>
+                    <a href="{{ url('posts/'.$post->id) }}" class="{{ $post->trashed() ? 'text-danger' : 'text-primary' }}">{{ $post->title }}</a>
                     @if($post->trashed())
                         </del>
                     @endif
@@ -39,6 +39,7 @@
                 <p> မင္းျဖတ္လို့မရဘူး! </p>
             @endcannot --}}
 
+            @if(!$post->trashed())
             @can('delete', $post)
                 <!-- <a href="{{ url('posts/'.$post->id) }}" class="btn btn-sm btn-danger"
                     onClick="event.preventDefault(); document.getElementById('delete-form').submit();" 
@@ -49,7 +50,7 @@
                     <input type="submit" value="Delete" class="btn btn-sm btn-danger">
                 </form>
             @endcan
-            <br/>
+            @endif
         @endforeach
     </div>
     <div class="col-md-4" style="position:absolute !important; right:0">
