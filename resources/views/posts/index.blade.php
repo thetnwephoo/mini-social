@@ -13,10 +13,13 @@
                     @endif
                 </h2>
 
-            <p class="text-muted">
+            {{-- <p class="text-muted">
                 Added {{ $post->created_at->diffForHumans() }}
                 by {{ $post->user->name }}    
-            </p>
+            </p> --}}
+
+            @update(['date' => $post->created_at, 'name' => $post->user->name ])
+            @endupdate
 
 
             @if($post->comments_count)

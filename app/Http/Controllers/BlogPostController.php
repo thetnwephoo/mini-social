@@ -41,8 +41,8 @@ class BlogPostController extends Controller {
 	 */
 	public function store(Request $request) {
 		// return $request->all();
-		BlogPost::create($request->all());
-		return redirect('posts');
+		$post = BlogPost::create($request->all());
+		return redirect()->route('posts.show',['post' => $post->id]);
 	}
 
 	/**
