@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\BlogPost;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -18,9 +19,10 @@ class BlogPostController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function index() {
-		$posts = BlogPost::latest()->withCount('comments')->get();
+		$posts = BlogPost::latest()->withCount('comments')->with('user')->get();
 		$mostCommented = BlogPost::mostCommented()->take(5)->get();
-		return view('posts.index', compact('posts', 'mostCommented'));
+		$mostPostedUsers = User::mostPostedUser()->take(5)->get();
+		return view('posts.index', compact('posts', 'mostCommented', 'mostPostedUsers'));
 	}
 
 	/**

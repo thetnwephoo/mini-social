@@ -56,19 +56,52 @@
             @endif
         @endforeach
     </div>
-    <div class="col-md-4" style="position:absolute !important; right:0">
+    <div class="col-md-4">
         <div class="container">
-            <div class="row">
-                <div class="list-group" style="position:fixed;">
-                    <a href="#" class="list-group-item list-group-item-action active">
-                        <h4> Most Commented! </h4>
-                        What people are currently talking about.
-                    </a>
-                    @foreach($mostCommented as $post)
-                        <a href="{{ url('posts/'.$post->id) }}" class="list-group-item list-group-item-action">{{ $post->title }}</a>
+
+            @card(['title' => 'Most Commented!'])
+                @slot('users')
+                     @foreach($mostCommented as $post)
+                        <li class="list-group-item">
+                            <a href="{{ url('posts/'.$post->id) }}">{{ $post->title }}</a>
+                        </li>
                     @endforeach
+                @endslot
+            @endcard
+
+            {{-- <div class="row">
+                <div class="card" style="width: 100%;">
+                    <div class="card-header">
+                        <h4> Most Commented! </h4>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        @foreach($mostCommented as $post)
+                                <li class="list-group-item">
+                                    <a href="{{ url('posts/'.$post->id) }}">{{ $post->title }}</a>
+                                </li>
+                        @endforeach
+                    </ul>
                 </div>
+            </div> --}}
+
+            <div class="row mt-4">
+                {{-- <div class="card" style="width: 100%;">
+                    <div class="card-header">
+                        <h4> Most Posted Users! </h4>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        @foreach($mostPostedUsers as $user)
+                                <li class="list-group-item">
+                                    <a href="{{ url('posts/'.$post->id) }}">{{ $user->name }}</a>
+                                </li>
+                        @endforeach
+                    </ul>
+                </div> --}}
+                @card(['title' => 'Most Posted Users!'])
+                    @slot('users', collect($mostPostedUsers)->pluck('name'))
+                @endcard
             </div>
+
         </div>
     </div>
 </div>
