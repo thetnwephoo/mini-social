@@ -22,7 +22,7 @@
                 {{-- <input type="text" name="content" class="form-control" id="content" placeholder="Content"> --}}
             </div>
         </div>
-        <input type="submit" class="btn btn-primary btn-block" value="Post">
+        <input type="submit" class="btn btn-primary btn-block" value="Update">
 
     </div>
 

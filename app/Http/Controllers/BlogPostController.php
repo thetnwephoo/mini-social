@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\BlogPost;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 
 class BlogPostController extends Controller {
@@ -19,9 +20,18 @@ class BlogPostController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function index() {
+
+		$mostCommented = Cache::remember('most-comments', 60, function() {
+			return  BlogPost::mostCommented()->take(5)->get();
+		});
+
+		$mostPostedUsers = Cache::remember('most-posted-users', 60, function() {
+			return  User::mostPostedUser()->take(5)->get();
+		});
+
 		$posts = BlogPost::latest()->withCount('comments')->with('user')->get();
-		$mostCommented = BlogPost::mostCommented()->take(5)->get();
-		$mostPostedUsers = User::mostPostedUser()->take(5)->get();
+		// $mostCommented = BlogPost::mostCommented()->take(5)->get();
+		// $mostPostedUsers = User::mostPostedUser()->take(5)->get();
 		return view('posts.index', compact('posts', 'mostCommented', 'mostPostedUsers'));
 	}
 
@@ -60,8 +70,40 @@ class BlogPostController extends Controller {
 		// }])->findOrFail($id);
 
 		// ** သူ့ကို default အေနနဲထုပ္ခ်င္တယ္ဆိုရင္ေတာ့ BlogPost Model ထဲမွာသြားပီးေတာ့ထုပ္လို့ရတယ္။
-		$post = BlogPost::with('comments')->findOrFail($id);
-		return view('posts.show', compact('post'));
+		$post = Cache::remember("blog-post-{$id}", 60, function() use($id) {
+			return  BlogPost::with('comments')->findOrFail($id);
+		});
+
+		$sessionID = session()->getId();
+		$counterKey = "blog-post-{$id}-counter";
+		$userKey = "blog-post-{$id}-user";
+		$users = Cache::get($userKey, []);
+		$userUpdate = [];
+		$difference = 0;
+		$now = now();
+		foreach($users as $session => $lastVisit) {
+			if($now->diffInMinutes($lastVisit) >= 1) {
+				$difference--;
+			} else {
+				$userUpdate[$session] = $lastVisit;
+			}
+		}
+		if(!array_key_exists($sessionID, $users) || $now->diffInMinutes($users[$sessionID]))
+		{
+			$difference++;
+		}
+		$userUpdate[$sessionID] = $now;
+		Cache::forever($userKey, $userUpdate);
+		if(!Cache::has($counterKey)) {
+			Cache::forever($counterKey, 1);
+		} else {
+			Cache::increment($counterKey, $difference);
+		}
+
+		$counter = Cache::get($counterKey);
+
+		// $post = BlogPost::with('comments')->findOrFail($id);
+		return view('posts.show', compact('post', 'counter'));
 	}
 
 	/**
@@ -96,7 +138,7 @@ class BlogPostController extends Controller {
 
 		$post->fill($request->all());
 		$post->save();
-		return redirect('posts');
+		return redirect()->route('posts.show', ['post' => $id]);
 
 	}
 

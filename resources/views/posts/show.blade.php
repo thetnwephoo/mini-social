@@ -22,6 +22,8 @@
 
 <p>{{ $post->content }}</p>
 
+<p> This post view by {{ $counter }} people </p>
+
 @forelse($post->comments as $comment)
     <p>{{ $comment->content }}</p>
     {{-- <strong>added {{ $comment->created_at->diffForHumans()}}</strong> --}}

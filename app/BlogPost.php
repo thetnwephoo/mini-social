@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 
 class BlogPost extends Model
 {
@@ -56,6 +57,10 @@ class BlogPost extends Model
         static::addGlobalScope(new SoftDeleteScope); // သူကေတာ့ Global Scope ကိုေခၚသံုးထားတာပဲျဖစ္ပါတယ္။ Query ေတြအတြက္ေပါ့။
        
         parent::boot();
+
+        static::updating(function (BlogPost $blogPost) {
+            Cache::forget("blog-post-{$blogPost->id}");
+        });
 
         static::deleting(function (BlogPost $blogPost) {
             $blogPost->comments()->delete(); // comment table ထဲမွာရွိတဲ့ blogPost နဲ့ဆိုင္တဲ့ေကာင္ေတြအားလံုးကိုသြားဖ်တ္တာ။
